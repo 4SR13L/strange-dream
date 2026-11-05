@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f0ede5">
+  <meta name="description" content="STRANGEDREAM — figures, acessórios, pelúcias e pequenas obsessões para pessoas estranhas.">
+  <title>STRANGEDREAM — Coisas estranhas para pessoas estranhas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div class="announcement"><span>FRETE GRÁTIS ACIMA DE R$ 120 // NÃO OLHE PARA TRÁS</span><span>SINAL: EST-013</span></div>
+  <header class="site-header">
+    <a class="brand" href="#inicio" aria-label="STRANGEDREAM — início"><img src="assets/logo.png" alt="STRANGEDREAM"></a>
+    <button class="menu-toggle" aria-label="Abrir menu" aria-expanded="false">☰</button>
+    <nav class="main-nav" aria-label="Navegação principal">
+      <a class="active" href="#inicio">Início</a><a href="#catalogo">Catálogo</a><a href="#novidades">Novidades</a><a href="#manifesto">Sobre o ruído</a>
+    </nav>
+    <div class="header-actions">
+      <label class="searchbox"><input id="global-search" type="search" placeholder="buscar uma lembrança..." aria-label="Buscar produtos"><kbd>⌘K</kbd></label>
+      <button class="icon-action" id="favorites-shortcut" aria-label="Favoritos">♡ <span id="favorite-count">03</span></button>
+      <a class="account-link" href="#conta">CONTA</a>
+      <button class="cart-button" id="open-cart">CARRINHO <span id="cart-count">[0]</span></button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="inicio">
+      <div class="hero-copy">
+        <div class="eyebrow light">STRANGEDREAM / PEQUENAS OBSESSÕES</div>
+        <h1>COISAS ESTRANHAS<br>PARA PESSOAS<br>ESTRANHAS</h1>
+        <p>Figures, Acessórios, Pelúcias e outras pequenas obsessões para levar para casa. Encontre personagens, mundo e histórias que você ama em produtos feitos para acompanhar você depois de fechar o jogo.</p>
+        <div class="hero-links"><a class="button button-pink" href="#catalogo">ABRIR O CATÁLOGO →</a><a class="button button-light" href="#manifesto">LER O MANIFESTO</a></div>
+      </div>
+      <article class="featured-product">
+        <div class="featured-image"><img src="assets/hero-keychain.png" alt="Chaveiro ilustrado Maeno Aki"></div>
+        <div class="featured-meta"><span>LANÇAMENTO / ACESSÓRIOS</span><span class="signal">SINAL 013</span></div>
+        <h2>Maeno Aki double-sided Keychain</h2>
+        <div class="featured-bottom"><small>Zeno REMAKE</small><strong>R$ 14,90</strong></div>
+        <button class="quick-add" data-add="maeno">ADICIONAR AO CARRINHO +</button>
+      </article>
+      <span class="hero-coordinate">HOME // CLARO</span>
+    </section>
+
+    <section class="section recent-section" id="novidades">
+      <div class="section-heading">
+        <div><span class="eyebrow">RECENTES</span><h2>Escolhidos para você com base em suas<br class="desktop-only"> preferências</h2></div>
+        <a class="text-link" href="#catalogo">VER TODOS →</a>
+      </div>
+      <div class="product-grid" id="featured-grid"></div>
+    </section>
+
+    <section class="collection-banner" id="manifesto">
+      <div class="collection-mark" aria-hidden="true"><span>⌁</span></div>
+      <div class="collection-copy"><span class="eyebrow">COLEÇÃO: DO OUTRO LADO</span><h2>Alguns mundos ficam com você.</h2><p>Uma seleção de produtos para quem prefere histórias incomuns, personagens marcantes e universos fora do padrão. Alguns mundos existem apenas nos sonhos. Outros ficam com você muito depois de acordar.</p><a class="button button-outline" href="#catalogo">ENTRAR NA COLEÇÃO</a></div>
+    </section>
+
+    <section class="catalog-section section" id="catalogo">
+      <div class="catalog-title"><div><span class="eyebrow">STRANGEDREAM / ARQUIVO</span><h2>CATÁLOGO</h2><p>Figures, acessórios, pelúcias, roupas e outras pequenas obsessões.</p></div><span class="catalog-total" id="catalog-total">12 ITENS ENCONTRADOS</span></div>
+      <div class="catalog-toolbar">
+        <input id="catalog-search" type="search" placeholder="Buscar por título, estúdio ou sensação inexplicável...">
+        <select id="sort-products" aria-label="Ordenar produtos"><option value="recent">Recentes ↓</option><option value="low">Menor preço</option><option value="high">Maior preço</option><option value="name">Nome A–Z</option></select>
+      </div>
+      <div class="catalog-layout">
+        <aside class="filters">
+          <div class="filter-heading"><strong>FILTRAR</strong><button id="clear-filters">limpar tudo</button></div>
+          <div class="filter-group"><h3>PRODUTOS</h3><label><input type="checkbox" value="Pelúcias" class="category-filter"> Pelúcias <span>21</span></label><label><input type="checkbox" value="Figures & Estátuas" class="category-filter"> Figures & Estátuas <span>14</span></label><label><input type="checkbox" value="Decoração" class="category-filter"> Decoração <span>15</span></label><label><input type="checkbox" value="Roupas" class="category-filter"> Roupas <span>13</span></label><label><input type="checkbox" value="Acessórios" class="category-filter"> Acessórios <span>12</span></label></div>
+          <div class="filter-group"><h3>UNIVERSOS</h3><label><input type="checkbox" value="OMORI" class="universe-filter"> OMORI</label><label><input type="checkbox" value="Dead Plate" class="universe-filter"> Dead Plate</label><label><input type="checkbox" value="Zeno REMAKE" class="universe-filter"> Zeno REMAKE</label><label><input type="checkbox" value="Yume Nikki" class="universe-filter"> Yume Nikki</label></div>
+          <div class="filter-group"><h3>DISPONIBILIDADE</h3><label><input type="checkbox" id="stock-filter"> Em estoque</label></div>
+          <div class="filter-group"><h3>PREÇO MÁXIMO</h3><input type="range" id="price-filter" min="15" max="500" value="500"><output id="price-output">R$ 500,00</output></div>
+          <button class="button button-dark apply-filter" id="apply-filters">APLICAR FILTROS</button>
+        </aside>
+        <div class="catalog-results"><div class="active-filters" id="active-filters"></div><div class="product-grid catalog-grid" id="catalog-grid"></div><div class="empty-state" id="empty-state" hidden>NENHUMA OBSESSÃO ENCONTRADA.<br><small>Tente remover algum filtro.</small></div></div>
+      </div>
+    </section>
+
+    <section class="newsletter">
+      <div><span class="eyebrow light">SINAL / BOLETIM QUINZENAL</span><h2>Uma mensagem<br>do outro lado.</h2><p>Novidades, pequenas descobertas e produtos que talvez encontrem um lugar na sua estante.</p></div>
+      <form id="newsletter-form"><label for="newsletter-email">SEU E-MAIL</label><div class="newsletter-input"><input id="newsletter-email" type="email" placeholder="voce@email.com" required><button type="submit">QUERO RECEBER →</button></div><small>Sem ruído desnecessário. Você pode cancelar quando quiser.</small></form>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-main"><div class="footer-brand"><img src="assets/logo.png" alt="STRANGEDREAM"><p>Figures, Acessórios, Pelúcias e outras pequenas obsessões para levar para casa.</p></div><div><h3>ARQUIVO</h3><a href="#catalogo">Catálogo</a><a href="#novidades">Novidades</a><a href="#conta">Lista de desejos</a></div><div><h3>AJUDA</h3><a href="#ajuda">Envio e devolução</a><a href="#ajuda">Perguntas frequentes</a><a href="#ajuda">Fale com o vazio</a></div><div><h3>SINAL</h3><a href="#newsletter">Boletim quinzenal</a><a href="#manifesto">Instagram inexistente</a><a href="#manifesto">Discord do porão</a></div></div>
+    <div class="footer-bottom"><span>© 2026 STRANGEDREAM — TODOS OS FANTASMAS RESERVADOS</span><span>PRIVACIDADE · TERMOS · COOKIES</span></div>
+  </footer>
+
+  <div class="drawer-backdrop" id="drawer-backdrop"></div>
+  <aside class="cart-drawer" id="cart-drawer" aria-label="Carrinho de compras" aria-hidden="true">
+    <div class="drawer-head"><div><span class="eyebrow">ARQUIVO / CARRINHO</span><h2>SEU CARRINHO</h2></div><button id="close-cart" aria-label="Fechar carrinho">✕</button></div>
+    <div id="cart-items" class="cart-items"></div>
+    <div class="cart-summary"><div><span>Subtotal</span><strong id="cart-subtotal">R$ 0,00</strong></div><div><span>Frete estimado</span><strong id="cart-shipping">R$ 0,00</strong></div><div class="cart-total"><span>TOTAL</span><strong id="cart-total">R$ 0,00</strong></div><button class="button button-pink checkout-button" id="checkout-button">CONTINUAR PARA ENTREGA →</button><small>Frete e pagamento reais não estão conectados nesta demonstração.</small></div>
+  </aside>
+
+  <dialog id="product-dialog" class="product-dialog"><button class="dialog-close" id="close-product" aria-label="Fechar">✕</button><div id="product-detail"></div></dialog>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
