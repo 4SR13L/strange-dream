@@ -1,5 +1,4 @@
 
-/* STRANGEDREAM — catálogo e funcionalidades */
 (() => {
   'use strict';
 
@@ -35,6 +34,8 @@
 
   let cart = read('sd-cart', []);
   let favorites = read('sd-favs', ['carnivore','basil','maeno']);
+  let checkout = read('sd-checkout', {});
+  let lastOrder = read('sd-last-order', null);
   let categoryFilters = [];
   let universeFilters = [];
   let stockOnly = false;
@@ -237,7 +238,6 @@
     dialog.showModal();
   }
 
-  // Rotas da homepage: o catálogo continua visível.
   const homeHashes = new Set([
     '', 'inicio', 'catalogo', 'novidades', 'new',
     'manifesto', 'about', 'newsletter', 'social', 'community'
@@ -279,7 +279,15 @@
     pageView.hidden = false;
 
     if (typeof window.renderSDPage === 'function') {
-      pageView.innerHTML = window.renderSDPage(raw,{products,cart,favorites,toast}) ||
+     
+pageView.innerHTML = window.renderSDPage(raw,{
+  products,
+  cart,
+  favorites,
+  checkout,
+  order: lastOrder,
+  toast
+}) ||
         '<div class="page-wrap"><h1>Página não encontrada</h1><a href="#catalogo">Voltar ao catálogo</a></div>';
     }
   }
@@ -450,15 +458,88 @@
   document.addEventListener('submit',e => {
     const form = e.target;
 
-    if (form.matches('[data-demo-form]')) {
-      e.preventDefault();
-      const kind = form.dataset.demoForm;
-      const next = {
-        delivery:'payment',
-        register:'verify',
-        recover:'verify',
-        reset:'login'
-      };
+    
+if (form.matches('[data-demo-form]')) {
+  e.preventDefault();
+
+  const kind = form.dataset.demoForm;
+  const data = new FormData(form);
+
+  if (kind === 'delivery') {
+    checkout = {
+      ...checkout,
+      name: data.get('name'),
+      cep: data.get('cep'),
+      state: data.get('state'),
+      address: data.get('address'),
+      number: data.get('number'),
+      complement: data.get('complement'),
+      neighborhood: data.get('neighborhood'),
+      city: data.get('city'),
+      shipping: Number(data.get('shipping') || 12)
+    };
+
+    localStorage.setItem('sd-checkout', JSON.stringify(checkout));
+    location.hash = '#payment';
+    return;
+  }
+
+  if (kind === 'payment') {
+    checkout.payment = data.get('payment') || 'pix';
+    localStorage.setItem('sd-checkout', JSON.stringify(checkout));
+
+    location.hash = checkout.payment === 'pix'
+      ? '#pix'
+      : checkout.payment === 'card'
+        ? '#card-payment'
+        : '#boleto';
+
+    return;
+  }
+
+  if (kind === 'review') {
+    if (!cart.length) {
+      toast('SEU CARRINHO ESTÁ VAZIO.');
+      location.hash = '#catalogo';
+      return;
+    }
+
+    if (!checkout.name || !checkout.address || !checkout.payment) {
+      toast('Confira os dados de entrega e pagamento.');
+      location.hash = '#delivery';
+      return;
+    }
+
+    const subtotal = cart.reduce((sum,item) => {
+      const p = products.find(x => x.id === item.id);
+      return sum + (p ? p.price * item.qty : 0);
+    }, 0);
+
+    lastOrder = {
+      number: 'SD-' + Date.now().toString().slice(-8),
+      date: new Date().toISOString(),
+      status: 'AGUARDANDO PAGAMENTO',
+      total: subtotal + Number(checkout.shipping || 12),
+      items: [...cart],
+      checkout: {...checkout}
+    };
+
+    localStorage.setItem('sd-last-order', JSON.stringify(lastOrder));
+
+    cart = [];
+    updateCart();
+
+    location.hash = '#pedido-confirmado';
+    return;
+  }
+
+  if (kind === 'login') {
+    toast('Não foi possível autenticar: serviço de contas não configurado.');
+    return;
+  }
+
+  toast('Solicitação recebida.');
+}
 
       if (kind === 'payment') {
         const v = form.querySelector('[name="payment"]:checked')?.value || 'pix';
