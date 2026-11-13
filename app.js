@@ -1,3 +1,5 @@
+
+/* STRANGEDREAM — catálogo e funcionalidades */
 (() => {
   'use strict';
 
