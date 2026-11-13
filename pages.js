@@ -1,3 +1,5 @@
+
+/* STRANGEDREAM — páginas internas */
 (() => {
   'use strict';
 
