@@ -1,5 +1,3 @@
-
-/* STRANGEDREAM — páginas internas */
 (() => {
   'use strict';
 
@@ -177,92 +175,279 @@
       ${cartContent(ctx.cart, ctx.products)}
     `),
 
-    delivery: ctx => shell('ENTREGA', 'Onde devemos enviar seu pedido?', `
-      <div class="checkout-layout">
-        <form class="page-panel" data-demo-form="delivery">
-          <label class="form-field">Nome completo
-            <input required autocomplete="name">
+   
+delivery: ctx => shell('FINALIZAR COMPRA', 'Precisamos de um endereço para enviar seus achados.', `
+  <div class="checkout-progress">
+    <div class="checkout-step done"><span>01</span><small>CARRINHO</small></div>
+    <div class="checkout-step active"><span>02</span><small>ENTREGA</small></div>
+    <div class="checkout-step"><span>03</span><small>PAGAMENTO</small></div>
+    <div class="checkout-step"><span>04</span><small>CONFIRMAÇÃO</small></div>
+  </div>
+
+  <div class="checkout-layout">
+    <form class="page-panel checkout-form" data-demo-form="delivery">
+      <h2>ENDEREÇO DE ENTREGA</h2>
+
+      <label class="form-field">Nome completo
+        <input name="name" required autocomplete="name"
+          value="${escapeHTML(ctx.checkout?.name || '')}">
+      </label>
+
+      <div class="form-row">
+        <label class="form-field">CEP
+          <input name="cep" required placeholder="00000-000"
+            autocomplete="postal-code" maxlength="9"
+            value="${escapeHTML(ctx.checkout?.cep || '')}">
+        </label>
+        <label class="form-field">Estado
+          <input name="state" required maxlength="2" placeholder="RS"
+            value="${escapeHTML(ctx.checkout?.state || '')}">
+        </label>
+      </div>
+
+      <label class="form-field">Endereço
+        <input name="address" required autocomplete="street-address"
+          placeholder="Rua, avenida... "
+          value="${escapeHTML(ctx.checkout?.address || '')}">
+      </label>
+
+      <div class="form-row">
+        <label class="form-field">Número
+          <input name="number" required
+            value="${escapeHTML(ctx.checkout?.number || '')}">
+        </label>
+        <label class="form-field">Complemento
+          <input name="complement"
+            value="${escapeHTML(ctx.checkout?.complement || '')}">
+        </label>
+      </div>
+
+      <label class="form-field">Bairro
+        <input name="neighborhood" required
+          value="${escapeHTML(ctx.checkout?.neighborhood || '')}">
+      </label>
+
+      <label class="form-field">Cidade
+        <input name="city" required
+          value="${escapeHTML(ctx.checkout?.city || '')}">
+      </label>
+
+      <h2 class="checkout-subheading">OPÇÃO DE ENTREGA</h2>
+
+      <label class="shipping-option">
+        <input type="radio" name="shipping" value="12" checked>
+        <span><strong>Entrega padrão</strong><small>Prazo estimado de 5 a 10 dias úteis</small></span>
+        <strong>R$ 12,00</strong>
+      </label>
+
+      <label class="shipping-option">
+        <input type="radio" name="shipping" value="22">
+        <span><strong>Entrega expressa</strong><small>Prazo estimado de 2 a 5 dias úteis</small></span>
+        <strong>R$ 22,00</strong>
+      </label>
+
+      <button class="button button-pink checkout-submit">
+        CONTINUAR PARA PAGAMENTO →
+      </button>
+    </form>
+
+    <aside class="page-panel checkout-summary">
+      <h2>RESUMO DO PEDIDO</h2>
+      ${ctx.cart.map(item => {
+        const p = ctx.products.find(x => x.id === item.id);
+        return p ? `<div class="checkout-product">
+          <img src="assets/${escapeHTML(p.image)}" alt="${escapeHTML(p.name)}">
+          <div><strong>${escapeHTML(p.name)}</strong>
+          <small>Quantidade: ${item.qty}</small></div>
+          <strong>${money(p.price * item.qty)}</strong>
+        </div>` : '';
+      }).join('')}
+      <hr>
+      <p>Subtotal <strong>${money(ctx.cart.reduce((s,i) => s + (ctx.products.find(p => p.id === i.id)?.price || 0) * i.qty, 0))}</strong></p>
+      <p>Frete <strong>A partir de R$ 12,00</strong></p>
+      <p class="checkout-total">Total calculado na próxima etapa</p>
+      <a href="#carrinho" class="text-link">← VOLTAR AO CARRINHO</a>
+    </aside>
+  </div>
+`),
+
+payment: ctx => {
+  const subtotal = ctx.cart.reduce((s,i) => s + (ctx.products.find(p => p.id === i.id)?.price || 0) * i.qty, 0);
+  const shipping = Number(ctx.checkout?.shipping || 12);
+
+  return shell('FORMA DE PAGAMENTO', 'Escolha como deseja concluir seu pedido.', `
+    <div class="checkout-progress">
+      <div class="checkout-step done"><span>01</span><small>CARRINHO</small></div>
+      <div class="checkout-step done"><span>02</span><small>ENTREGA</small></div>
+      <div class="checkout-step active"><span>03</span><small>PAGAMENTO</small></div>
+      <div class="checkout-step"><span>04</span><small>CONFIRMAÇÃO</small></div>
+    </div>
+
+    <div class="checkout-layout">
+      <div class="page-panel">
+        <h2>SELECIONE UMA OPÇÃO</h2>
+
+        <form data-demo-form="payment" class="payment-options">
+          <label class="payment-option">
+            <input type="radio" name="payment" value="pix" checked>
+            <span class="payment-icon">✳</span>
+            <span><strong>PIX</strong><small>Pagamento instantâneo</small></span>
+            <span class="payment-check">✓</span>
           </label>
-          <label class="form-field">CEP
-            <input required inputmode="numeric" placeholder="00000-000">
+
+          <label class="payment-option">
+            <input type="radio" name="payment" value="card">
+            <span class="payment-icon">▤</span>
+            <span><strong>Cartão de crédito</strong><small>Consulte as opções disponíveis</small></span>
+            <span class="payment-check">✓</span>
           </label>
-          <label class="form-field">Endereço
-            <input required autocomplete="street-address">
+
+          <label class="payment-option">
+            <input type="radio" name="payment" value="boleto">
+            <span class="payment-icon">▧</span>
+            <span><strong>Boleto bancário</strong><small>Pagamento por código de barras</small></span>
+            <span class="payment-check">✓</span>
           </label>
-          <label class="form-field">Número
-            <input required>
-          </label>
-          <label class="form-field">Complemento
-            <input>
-          </label>
-          <label class="form-field">Cidade
-            <input required>
-          </label>
-          <label class="form-field">Estado
-            <input required maxlength="2">
-          </label>
-          <button class="button button-pink">CONTINUAR PARA PAGAMENTO →</button>
+
+          <button class="button button-pink checkout-submit">
+            CONTINUAR →
+          </button>
         </form>
-        <aside class="page-panel">
-          <h2>SEU PEDIDO</h2>
-          <p>${ctx.cart.length} item(ns) no carrinho</p>
-          <p>Os valores de frete são demonstrativos.</p>
-        </aside>
       </div>
-    `),
 
-    payment: () => shell('PAGAMENTO', 'Escolha uma forma de pagamento.', `
+      <aside class="page-panel checkout-summary">
+        <h2>SEU PEDIDO</h2>
+        <p>Subtotal <strong>${money(subtotal)}</strong></p>
+        <p>Frete <strong>${money(shipping)}</strong></p>
+        <hr>
+        <p class="checkout-total">TOTAL <strong>${money(subtotal + shipping)}</strong></p>
+        <h3>ENDEREÇO DE ENTREGA</h3>
+        <p>${escapeHTML(ctx.checkout?.name || '')}</p>
+        <p>${escapeHTML(ctx.checkout?.address || '')}, ${escapeHTML(ctx.checkout?.number || '')}</p>
+        <p>${escapeHTML(ctx.checkout?.city || '')} - ${escapeHTML(ctx.checkout?.state || '')}</p>
+        <a href="#delivery" class="text-link">ALTERAR ENDEREÇO</a>
+      </aside>
+    </div>
+  `);
+},
+
+pix: ctx => shell('PAGAMENTO VIA PIX', 'Finalize seu pedido utilizando PIX.', `
+  <div class="page-panel payment-detail">
+    <div class="payment-big-icon">✳</div>
+    <h2>PIX SELECIONADO</h2>
+    <p>Você escolheu PIX como forma de pagamento.</p>
+    <div class="payment-notice">
+      <strong>Pagamento aguardando configuração</strong>
+      <p>O código PIX será disponibilizado quando a loja estiver conectada ao serviço de pagamentos.</p>
+    </div>
+    <a href="#review" class="button button-pink">REVISAR MEU PEDIDO →</a>
+    <p><a href="#payment">Alterar forma de pagamento</a></p>
+  </div>
+`),
+
+'card-payment': ctx => shell('CARTÃO DE CRÉDITO', 'Confira a opção escolhida para seu pedido.', `
+  <div class="page-panel payment-detail">
+    <div class="payment-big-icon">▤</div>
+    <h2>PAGAMENTO COM CARTÃO</h2>
+    <p>O pagamento por cartão estará disponível após a integração com o processador de pagamentos.</p>
+    <div class="payment-notice">
+      <strong>Área de pagamento</strong>
+      <p>Os campos de cartão serão disponibilizados pelo provedor seguro de pagamento. Não informe dados reais nesta versão.</p>
+    </div>
+    <a href="#review" class="button button-pink">REVISAR MEU PEDIDO →</a>
+    <p><a href="#payment">Alterar forma de pagamento</a></p>
+  </div>
+`),
+
+boleto: ctx => shell('BOLETO BANCÁRIO', 'Confira a opção escolhida para seu pedido.', `
+  <div class="page-panel payment-detail">
+    <div class="payment-big-icon">▧</div>
+    <h2>BOLETO SELECIONADO</h2>
+    <p>Você escolheu boleto bancário.</p>
+    <div class="payment-notice">
+      <strong>Emissão de boleto</strong>
+      <p>O documento e o código de barras serão gerados após a integração com o serviço financeiro.</p>
+    </div>
+    <a href="#review" class="button button-pink">REVISAR MEU PEDIDO →</a>
+    <p><a href="#payment">Alterar forma de pagamento</a></p>
+  </div>
+`),
+
+review: ctx => {
+  const subtotal = ctx.cart.reduce((s,i) => s + (ctx.products.find(p => p.id === i.id)?.price || 0) * i.qty, 0);
+  const shipping = Number(ctx.checkout?.shipping || 12);
+  const methods = {pix:'PIX',card:'Cartão de crédito',boleto:'Boleto bancário'};
+
+  return shell('REVISÃO DO PEDIDO', 'Confira todos os detalhes antes de concluir.', `
+    <div class="checkout-progress">
+      <div class="checkout-step done"><span>01</span><small>CARRINHO</small></div>
+      <div class="checkout-step done"><span>02</span><small>ENTREGA</small></div>
+      <div class="checkout-step done"><span>03</span><small>PAGAMENTO</small></div>
+      <div class="checkout-step active"><span>04</span><small>REVISÃO</small></div>
+    </div>
+
+    <div class="checkout-layout">
       <div class="page-panel">
-        <form data-demo-form="payment">
-          <label><input type="radio" name="payment" value="pix" checked> PIX</label>
-          <label><input type="radio" name="payment" value="card"> Cartão</label>
-          <label><input type="radio" name="payment" value="boleto"> Boleto</label>
-          <button class="button button-pink">CONTINUAR →</button>
+        <h2>ITENS DO PEDIDO</h2>
+        ${ctx.cart.map(item => {
+          const p = ctx.products.find(x => x.id === item.id);
+          return p ? `<div class="checkout-product">
+            <img src="assets/${escapeHTML(p.image)}" alt="${escapeHTML(p.name)}">
+            <div><strong>${escapeHTML(p.name)}</strong><small>Quantidade: ${item.qty}</small></div>
+            <strong>${money(p.price * item.qty)}</strong>
+          </div>` : '';
+        }).join('')}
+
+        <hr>
+        <h2>ENTREGA</h2>
+        <p><strong>${escapeHTML(ctx.checkout?.name || '')}</strong></p>
+        <p>${escapeHTML(ctx.checkout?.address || '')}, ${escapeHTML(ctx.checkout?.number || '')}</p>
+        <p>${escapeHTML(ctx.checkout?.neighborhood || '')} — ${escapeHTML(ctx.checkout?.city || '')}/${escapeHTML(ctx.checkout?.state || '')}</p>
+        <p>CEP: ${escapeHTML(ctx.checkout?.cep || '')}</p>
+
+        <hr>
+        <h2>PAGAMENTO</h2>
+        <p>${methods[ctx.checkout?.payment] || 'Não selecionado'}</p>
+        <a href="#payment" class="text-link">ALTERAR PAGAMENTO</a>
+
+        <form data-demo-form="review">
+          <button class="button button-pink checkout-submit" ${ctx.cart.length ? '' : 'disabled'}>
+            CONFIRMAR PEDIDO →
+          </button>
         </form>
-        <p>Esta é uma demonstração. Nenhum pagamento será realizado.</p>
       </div>
-    `),
 
-    pix: () => shell('PAGAMENTO PIX', 'Demonstração de pagamento.', `
-      <div class="page-panel">
-        <p>O pagamento PIX ainda não está conectado a um serviço financeiro.</p>
-        ${button('VOLTAR AO PAGAMENTO', '#payment')}
-      </div>
-    `),
+      <aside class="page-panel checkout-summary">
+        <h2>RESUMO FINANCEIRO</h2>
+        <p>Subtotal <strong>${money(subtotal)}</strong></p>
+        <p>Frete <strong>${money(shipping)}</strong></p>
+        <hr>
+        <p class="checkout-total">TOTAL <strong>${money(subtotal + shipping)}</strong></p>
+        <div class="payment-notice">
+          <strong>Antes de continuar</strong>
+          <p>A confirmação registra o pedido e suas informações. A cobrança depende da integração com o provedor de pagamento.</p>
+        </div>
+      </aside>
+    </div>
+  `);
+},
 
-    'card-payment': () => shell('PAGAMENTO COM CARTÃO', 'Demonstração de pagamento.', `
-      <div class="page-panel">
-        <p>Não insira dados reais de cartão. O pagamento ainda não está integrado.</p>
-        ${button('VOLTAR AO PAGAMENTO', '#payment')}
-      </div>
-    `),
-
-    boleto: () => shell('BOLETO', 'Demonstração de pagamento.', `
-      <div class="page-panel">
-        <p>A emissão de boletos ainda não está integrada.</p>
-        ${button('VOLTAR AO PAGAMENTO', '#payment')}
-      </div>
-    `),
-
-    review: ctx => shell('REVISAR PEDIDO', 'Confira antes de continuar.', `
-      <div class="page-panel">
-        <p>Itens: ${ctx.cart.length}</p>
-        <p>Esta etapa é apenas demonstrativa.</p>
-        <label><input type="checkbox" id="accept-order-terms"> Li os termos demonstrativos.</label>
-        <button class="button button-pink" data-toast="Pedido de demonstração revisado.">
-          CONFIRMAR REVISÃO
-        </button>
-      </div>
-    `),
-
-    'pedido-confirmado': () => shell('OBRIGADO!', 'Esta é uma confirmação demonstrativa.', `
-      <div class="success-panel">
-        <h2>SEU PEDIDO DE TESTE FOI REGISTRADO.</h2>
-        <p>Nenhuma compra ou cobrança real aconteceu.</p>
-        ${button('VOLTAR À LOJA', '#inicio')}
-      </div>
-    `),
-
+'pedido-confirmado': ctx => shell('PEDIDO RECEBIDO!', 'Seu pedido foi registrado.', `
+  <div class="success-panel order-success">
+    <div class="order-success-icon">✓</div>
+    <h2>OBRIGADO POR ESCOLHER A STRANGEDREAM.</h2>
+    <p>Seu pedido foi registrado com sucesso.</p>
+    <div class="order-number">
+      <small>NÚMERO DO PEDIDO</small>
+      <strong>${escapeHTML(ctx.order?.number || 'SD-PENDENTE')}</strong>
+    </div>
+    <div class="payment-notice">
+      <strong>STATUS: ${escapeHTML(ctx.order?.status || 'AGUARDANDO PAGAMENTO')}</strong>
+      <p>O registro do pedido não representa aprovação ou confirmação de pagamento.</p>
+    </div>
+    <a href="#catalogo" class="button button-pink">CONTINUAR EXPLORANDO →</a>
+  </div>
+`),
     sobre: () => shell('SOBRE A STRANGEDREAM', 'Coisas estranhas para pessoas estranhas.', `
       <section class="page-panel">
         <h2>UM UNIVERSO FORA DO COMUM.</h2>
